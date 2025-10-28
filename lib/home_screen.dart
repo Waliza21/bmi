@@ -17,6 +17,16 @@ class _HomeScreenState extends State<HomeScreen> {
   final feetCtr = TextEditingController();
   final inchCtr = TextEditingController();
 
+  String _bmiResult = "";
+  String? category;
+
+  String categoryResult(double bmi) {
+    if (bmi < 18.5) return "Underweight";
+    if (bmi < 25) return "Normal";
+    if (bmi < 30) return "Overweight";
+    return "Obese";
+  }
+
   //1m = 100 cm
   double? cmToM() {
     final cm = double.tryParse(cmCtr.text.trim());
@@ -47,6 +57,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _calculate() {
     final weight = double.tryParse(weightCtr.text.trim());
+
+    if (weight == null || weight <= 0) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Invalid Value')));
+      return;
+    }
+
+    final m = heightType == HeightType.cm ? cmToM() : feetInchToM();
+    if (m == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Invalid Value')));
+      return;
+    }
+    final bmi = weight / (m * m);
+    final cat = categoryResult(bmi);
+
+    setState(() {
+      _bmiResult = bmi.toStringAsFixed(3);
+      category = cat;
+    });
   }
 
   @override
@@ -66,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.all(16),
         children: [
           TextFormField(
+            controller: weightCtr,
             decoration: InputDecoration(
               labelText: 'Weight (KG)',
               border: OutlineInputBorder(),
@@ -96,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (heightType == HeightType.cm) ...[
             const SizedBox(height: 16),
             TextFormField(
+              controller: cmCtr,
               decoration: InputDecoration(
                 labelText: 'Height (cm)',
                 border: OutlineInputBorder(),
@@ -107,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: TextFormField(
+                    controller: feetCtr,
                     decoration: InputDecoration(
                       labelText: "Feet(')",
                       border: OutlineInputBorder(),
@@ -116,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextFormField(
+                    controller: inchCtr,
                     decoration: InputDecoration(
                       labelText: 'Inch (")',
                       border: OutlineInputBorder(),
@@ -127,17 +163,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           const SizedBox(height: 8),
 
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Weight (KG)',
-              border: OutlineInputBorder(),
-            ),
-          ),
+          // TextFormField(
+          //   controller: weightCtr,
+          //   decoration: InputDecoration(
+          //     labelText: 'Weight (KG)',
+          //     border: OutlineInputBorder(),
+          //   ),
+          // ),
+          // const SizedBox(height: 16),
+          ElevatedButton(onPressed: _calculate, child: Text('Show Result')),
           const SizedBox(height: 16),
-
-          ElevatedButton(onPressed: () {}, child: Text('Show Result')),
-          const SizedBox(height: 16),
-          Text('Result'),
+          Text('Result: $_bmiResult'),
+          Text('Category: $category'),
           const SizedBox(height: 16),
         ],
       ),
