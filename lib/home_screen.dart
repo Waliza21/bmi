@@ -71,6 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
       feet += 1;
       inch = inch - 12;
     }
+    // print(feet);
+    // print(inch);
     final totalInch = feet * 12 + inch;
     if (totalInch <= 0) {
       ScaffoldMessenger.of(
