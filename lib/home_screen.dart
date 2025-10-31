@@ -35,9 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
   double? lbToKg() {
     final lb = double.tryParse(lbCtr.text.trim());
     if (lb == null || lb <= 0) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please provide valid pound value')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please provide valid pound value')),
+      );
       return null;
     }
     return lb * 0.453592;
@@ -110,9 +110,15 @@ class _HomeScreenState extends State<HomeScreen> {
     final cat = categoryResult(bmi);
 
     setState(() {
-      _bmiResult = bmi.toStringAsFixed(3);
+      _bmiResult = bmi.toStringAsFixed(1);
       category = cat;
     });
+    cmCtr.clear();
+    mCtr.clear();
+    feetCtr.clear();
+    inchCtr.clear();
+    kgCtr.clear();
+    lbCtr.clear();
   }
 
   @override
