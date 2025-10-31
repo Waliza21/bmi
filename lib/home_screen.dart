@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return cm / 100.0;
   }
 
-  //1 inch= 0.0254m
   double? feetInchToM() {
     var feet = double.tryParse(feetCtr.text.trim());
     var inch = double.tryParse(inchCtr.text.trim());
@@ -64,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (feet == null || feet <= 0 || inch == null || inch <= 0) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Invalid Value')));
+      ).showSnackBar(SnackBar(content: Text('Invalid feet & inch value')));
       return null;
     }
     if (inch >= 12) {
@@ -86,7 +85,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void _calculate() {
     final weight =
         weightType == WeightType.kg
-            ? double.tryParse(kgCtr.text.trim())
+            ? (() {
+              final weightKg = double.tryParse(mCtr.text.trim());
+              if (weightKg == null || weightKg < 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Please provide valid kg value')),
+                );
+                return null;
+              }
+              return weightKg;
+            })()
             : lbToKg();
 
     if (weight == null || weight <= 0) {
@@ -100,7 +108,16 @@ class _HomeScreenState extends State<HomeScreen> {
         heightType == HeightType.cm
             ? cmToM()
             : heightType == HeightType.m
-            ? double.tryParse(mCtr.text.trim())
+            ? (() {
+              final heightM = double.tryParse(mCtr.text.trim());
+              if (heightM == null || heightM < 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Please provide valid meter value')),
+                );
+                return null;
+              }
+              return heightM;
+            })()
             : feetInchToM();
     if (height == null) {
       ScaffoldMessenger.of(
